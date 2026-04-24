@@ -57,7 +57,19 @@ class TestCryptoAssetMagicMethods:
         with pytest.raises(TypeError):
             sample_asset < "not an asset"
 
+    def test_lt_equal(self):
+    a = CryptoAsset("A", "A", 10, 1.0)
+    b = CryptoAsset("B", "B", 10, 1.0)
+    assert not a < b
+    assert not b < a
 
+    def test_gt_equal(self):
+    a = CryptoAsset("A", "A", 10, 1.0)
+    b = CryptoAsset("B", "B", 10, 1.0)
+    assert not a > b
+    assert not b > a
+
+    
 class TestCryptoAssetEdgeCases:
     """Граничные случаи."""
 
@@ -72,3 +84,5 @@ class TestCryptoAssetEdgeCases:
     def test_special_symbol(self):
         asset = CryptoAsset("T", "BTC-USD", 100.0, 0.0)
         assert asset.symbol == "BTC-USD"
+
+
