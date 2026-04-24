@@ -18,9 +18,10 @@ class CoinMarketCapProvider(CryptoProvider):
         headers = {"X-CMC_PRO_API_KEY": self.api_key}
         params = {"limit": 50, "convert": "USD"}
 
-        response = requests.get(self.url, headers=headers, params=params)
-        response.raise_for_status()
-        data = response.json()["data"]
+        with requests.Session() as session:
+            response = session.get(self.url, headers=headers, params=params)
+            response.raise_for_status()
+            data = response.json()["data"]
 
         assets = []
         for item in data:

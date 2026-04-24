@@ -17,9 +17,10 @@ class CoinGeckoProvider(CryptoProvider):
             "per_page": self.per_page,
             "page": 1,
         }
-        response = requests.get(self.url, params=params)
-        response.raise_for_status()
-        data = response.json()
+        with requests.Session() as session:
+            response = session.get(self.url, params=params)
+            response.raise_for_status()
+            data = response.json()
 
         assets = []
         for item in data:
