@@ -1,0 +1,44 @@
+{
+    "generated_at": "2026-04-24 16:45:07",
+    "total_coins_analyzed": 50,
+    "total_market_cap_usd": 2580588025738,
+    "top_gainers": [
+        {
+            "name": "Zcash",
+            "symbol": "zec",
+            "change_24h": 7.17194
+        },
+        {
+            "name": "Rain",
+            "symbol": "rain",
+            "change_24h": 3.46835
+        },
+        {
+            "name": "Sky",
+            "symbol": "sky",
+            "change_24h": 2.16392
+        }
+    ],
+    "top_losers": [
+        {
+            "name": "World Liberty Financial",
+            "symbol": "wlfi",
+            "change_24h": -2.27808
+        },
+        {
+            "name": "Stellar",
+            "symbol": "xlm",
+            "change_24h": -1.32206
+        },
+        {
+            "name": "Hyperliquid",
+            "symbol": "hype",
+            "change_24h": -0.6533
+        }
+    ],
+    "highest_volume": {
+        "name": "Tether",
+        "symbol": "usdt",
+        "volume_usd": 62598986915
+    }
+}
