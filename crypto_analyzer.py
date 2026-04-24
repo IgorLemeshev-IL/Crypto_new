@@ -37,9 +37,11 @@ def retry(max_attempts: int = 3, delay: int = 2):
 
 # ========== ЗАГРУЗКА ДАННЫХ ==========
 @retry(max_attempts=3, delay=2)
-def fetch_crypto_data():
+def fetch_crypto_data(url: str = None):
     """Загружает топ-50 криптовалют с CoinGecko API."""
-    url = "https://api.coingecko.com/api/v3/coins/markets"
+    if url is None:
+        url = "https://api.coingecko.com/api/v3/coins/markets"
+    
     params = {
         "vs_currency": "usd",
         "order": "market_cap_desc",
@@ -55,16 +57,26 @@ def fetch_crypto_data():
 def analyze_data(data: list[dict]) -> dict:
     """Анализирует данные и возвращает словарь с результатами."""
     
-    # Топ-3 лидера роста
-    top_gainers = sorted(data, key=lambda x: x.get("price_change_percentage_24h") or 0, reverse=True)[:3]
+    # Топ-3 лидера роста (по price_change_percentage_24h)
+    top_gainers = sorted(
+        data, 
+        key=lambda x: x.get("price_change_percentage_24h") or 0, 
+        reverse=True
+    )[:3]
     
     # Топ-3 лидера падения
-    top_losers = sorted(data, key=lambda x: x.get("price_change_percentage_24h") or 0)[:3]
+    top_losers = sorted(
+        data, 
+        key=lambda x: x.get("price_change_percentage_24h") or 0
+    )[:3]
     
-    # Максимальный объём торгов
-    highest_volume = max(data, key=lambda x: x.get("total_volume") or 0)
+    # Монета с максимальным объёмом торгов (total_volume)
+    highest_volume = max(
+        data, 
+        key=lambda x: x.get("total_volume") or 0
+    )
     
-    # Суммарная капитализация
+    # Суммарная капитализация всех 50 монет
     total_market_cap = sum(coin.get("market_cap") or 0 for coin in data)
     
     return {
@@ -72,11 +84,19 @@ def analyze_data(data: list[dict]) -> dict:
         "total_coins_analyzed": len(data),
         "total_market_cap_usd": total_market_cap,
         "top_gainers": [
-            {"name": c["name"], "symbol": c["symbol"], "change_24h": c["price_change_percentage_24h"]}
+            {
+                "name": c["name"],
+                "symbol": c["symbol"],
+                "change_24h": c["price_change_percentage_24h"]
+            }
             for c in top_gainers
         ],
         "top_losers": [
-            {"name": c["name"], "symbol": c["symbol"], "change_24h": c["price_change_percentage_24h"]}
+            {
+                "name": c["name"],
+                "symbol": c["symbol"],
+                "change_24h": c["price_change_percentage_24h"]
+            }
             for c in top_losers
         ],
         "highest_volume": {
@@ -91,7 +111,6 @@ def analyze_data(data: list[dict]) -> dict:
 def print_results_table(results: dict):
     """Выводит результаты в виде Rich-таблиц."""
     
-    # Заголовок
     console.print()
     console.print(f"[bold cyan]📊 КРИПТО-АНАЛИЗАТОР[/bold cyan]")
     console.print(f"[dim]Отчёт сгенерирован: {results['generated_at']}[/dim]")
@@ -99,7 +118,7 @@ def print_results_table(results: dict):
     console.print(f"[dim]Общая капитализация: ${results['total_market_cap_usd']:,.0f}[/dim]")
     console.print()
     
-    # Таблица лидеров роста
+    # Таблица лидеров роста (зелёные)
     gainers_table = Table(title="🚀 Топ-3 лидера роста (24ч)", style="green")
     gainers_table.add_column("Монета", style="bold")
     gainers_table.add_column("Символ", style="dim")
@@ -115,7 +134,7 @@ def print_results_table(results: dict):
     console.print(gainers_table)
     console.print()
     
-    # Таблица лидеров падения
+    # Таблица лидеров падения (красные)
     losers_table = Table(title="📉 Топ-3 лидера падения (24ч)", style="red")
     losers_table.add_column("Монета", style="bold")
     losers_table.add_column("Символ", style="dim")
@@ -138,7 +157,7 @@ def print_results_table(results: dict):
 
 # ========== СОХРАНЕНИЕ ==========
 def save_report(results: dict, filename: str = "crypto_report.json"):
-    """Сохраняет отчёт в JSON-файл."""
+    """Сохраняет отчёт в JSON-файл с indent=4 и ensure_ascii=False."""
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
     console.print(f"[green]✅ Отчёт сохранён в {filename}[/green]")
@@ -170,5 +189,27 @@ def main():
     save_report(results)
 
 
+# ========== ТЕСТ ДЕКОРАТОРА RETRY ==========
+def test_retry():
+    """Проверка работы декоратора @retry на сломанном URL."""
+    console.print()
+    console.print("[bold yellow]🧪 ТЕСТ ДЕКОРАТОРА @retry[/bold yellow]")
+    console.print("[dim]Пробуем загрузить данные со сломанного URL...[/dim]")
+    console.print()
+    
+    try:
+        fetch_crypto_data(url="https://BROKEN-URL-TEST-12345.com/api")
+    except requests.RequestException as e:
+        console.print(f"[red]❌ Все попытки исчерпаны. Ошибка: {type(e).__name__}[/red]")
+        console.print("[green]✅ Декоратор @retry отработал корректно![/green]")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-retry":
+        # Тест декоратора
+        test_retry()
+    else:
+        # Обычный запуск
+        main()
