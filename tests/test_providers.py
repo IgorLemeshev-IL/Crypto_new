@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
+from unittest.mock import patch
 
 from providers.coingecko import CoinGeckoProvider
 from providers.coinmarketcap import CoinMarketCapProvider
@@ -10,12 +11,7 @@ from models.crypto_asset import CryptoAsset
 class TestCoinGeckoProvider:
     """Тесты CoinGecko провайдера."""
 
-    def test_get_assets_success(self, mock_requests_get, mock_coingecko_response):
-        mock_response = Mock()
-        mock_response.json.return_value = mock_coingecko_response
-        mock_response.raise_for_status = Mock()
-        mock_requests_get.return_value.__enter__.return_value = mock_response
-
+    def test_get_assets_success(self, mock_session, mock_coingecko_response):
         provider = CoinGeckoProvider()
         assets = provider.get_assets()
 
@@ -27,26 +23,25 @@ class TestCoinGeckoProvider:
         provider = CoinGeckoProvider()
         assert isinstance(provider, CryptoProvider)
 
-    def test_empty_response(self, mock_requests_get):
-        mock_response = Mock()
-        mock_response.json.return_value = []
-        mock_response.raise_for_status = Mock()
-        mock_requests_get.return_value.__enter__.return_value = mock_response
+    def test_empty_response(self):
+        with patch("requests.Session") as mock_session_class:
+            mock_session = MagicMock()
+            mock_response = Mock()
+            mock_response.json.return_value = []
+            mock_response.raise_for_status = Mock()
+            mock_session.get.return_value = mock_response
+            mock_session_class.return_value.__enter__.return_value = mock_session
+            mock_session_class.return_value.__exit__.return_value = None
 
-        provider = CoinGeckoProvider()
-        assets = provider.get_assets()
-        assert assets == []
+            provider = CoinGeckoProvider()
+            assets = provider.get_assets()
+            assert assets == []
 
 
 class TestCoinMarketCapProvider:
     """Тесты CoinMarketCap провайдера."""
 
-    def test_get_assets_success(self, mock_requests_get, mock_cmc_response):
-        mock_response = Mock()
-        mock_response.json.return_value = mock_cmc_response
-        mock_response.raise_for_status = Mock()
-        mock_requests_get.return_value.__enter__.return_value = mock_response
-
+    def test_get_assets_success(self, mock_session_cmc, mock_cmc_response):
         provider = CoinMarketCapProvider()
         assets = provider.get_assets()
 
@@ -58,12 +53,16 @@ class TestCoinMarketCapProvider:
         provider = CoinMarketCapProvider()
         assert isinstance(provider, CryptoProvider)
 
-    def test_missing_quote_field(self, mock_requests_get):
-        mock_response = Mock()
-        mock_response.json.return_value = {"data": [{"name": "BTC", "symbol": "BTC"}]}
-        mock_response.raise_for_status = Mock()
-        mock_requests_get.return_value.__enter__.return_value = mock_response
+    def test_missing_quote_field(self):
+        with patch("requests.Session") as mock_session_class:
+            mock_session = MagicMock()
+            mock_response = Mock()
+            mock_response.json.return_value = {"data": [{"name": "BTC", "symbol": "BTC"}]}
+            mock_response.raise_for_status = Mock()
+            mock_session.get.return_value = mock_response
+            mock_session_class.return_value.__enter__.return_value = mock_session
+            mock_session_class.return_value.__exit__.return_value = None
 
-        provider = CoinMarketCapProvider()
-        with pytest.raises(KeyError):
-            provider.get_assets()
+            provider = CoinMarketCapProvider()
+            with pytest.raises(KeyError):
+                provider.get_assets()
