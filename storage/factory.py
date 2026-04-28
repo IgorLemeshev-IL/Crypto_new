@@ -5,12 +5,16 @@ from storage.sqlite_storage import SqliteStorage
 
 
 class StorageFactory:
-    """Фабрика хранилищ — создаёт нужное хранилище по настройкам."""
+    """Фабрика хранилищ."""
 
     @staticmethod
     def create(settings: Settings) -> BaseStorage:
-        if settings.storage == StorageType.JSON:
+        return StorageFactory.create_by_name(settings.storage.value)
+
+    @staticmethod
+    def create_by_name(name: str) -> BaseStorage:
+        if name == "json":
             return JsonStorage()
-        if settings.storage == StorageType.SQLITE:
+        if name == "sqlite":
             return SqliteStorage()
-        raise ValueError(f"Unknown storage type: {settings.storage}")
+        raise ValueError(f"Unknown storage type: {name}")

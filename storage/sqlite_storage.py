@@ -8,9 +8,9 @@ class SqliteStorage(BaseStorage):
 
     def __init__(self, db_path: str = "crypto.db"):
         self.db_path = db_path
-        self._conn = sqlite3.connect(db_path)
-        self._conn.row_factory = sqlite3.Row
-        self._create_tables()
+        self._conn = sqlite3.connect(db_path) #  соединение с БД в памяти
+        self._conn.row_factory = sqlite3.Row # чтобы строки возвращались как dict
+        self._create_tables() # создаёт таблицы
 
     def _create_tables(self) -> None:
         cursor = self._conn.cursor()
