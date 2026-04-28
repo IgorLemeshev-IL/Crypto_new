@@ -2,7 +2,8 @@ import typer
 from providers.factory import ProviderFactory
 from formatters.factory import FormatterFactory
 from models.portfolio import CryptoPortfolio
-from storage.json_storage import JsonStorage
+from storage.factory import StorageFactory
+from settings import Settings
 
 app = typer.Typer()
 
@@ -27,8 +28,9 @@ def analyze(
     formatter = FormatterFactory.create(output)
     formatter.format(gainers)
 
-    # 4. Сохраняем результаты через хранилище
-    storage = JsonStorage()
+    # 4. Сохраняем через хранилище (выбирается по settings)
+    settings = Settings()
+    storage = StorageFactory.create(settings)
     results = {
         "top_gainers": [
             {"name": a.name, "symbol": a.symbol, "change_24h": a.change_24h}
