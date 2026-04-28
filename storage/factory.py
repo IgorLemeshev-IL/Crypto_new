@@ -1,6 +1,7 @@
 from settings import Settings, StorageType
 from storage.base import BaseStorage
 from storage.json_storage import JsonStorage
+from storage.sqlite_storage import SqliteStorage
 
 
 class StorageFactory:
@@ -10,4 +11,6 @@ class StorageFactory:
     def create(settings: Settings) -> BaseStorage:
         if settings.storage == StorageType.JSON:
             return JsonStorage()
+        if settings.storage == StorageType.SQLITE:
+            return SqliteStorage()
         raise ValueError(f"Unknown storage type: {settings.storage}")
