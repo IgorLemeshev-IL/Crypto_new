@@ -2,8 +2,6 @@ from providers.base import CryptoProvider
 
 
 class ProviderFactory:
-    """Фабрика провайдеров — реестр (Registry pattern)."""
-
     _providers: dict[str, type[CryptoProvider]] = {}
 
     @classmethod

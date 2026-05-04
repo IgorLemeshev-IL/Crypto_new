@@ -15,7 +15,7 @@ class ConsoleFormatter(OutputFormatter):
 
     def _print_table(self, title: str, style: str, assets: list[CryptoAsset]) -> None:
         if not assets:
-            self.console.print(f"[yellow]Нет данных[/yellow]")
+            self.console.print("[yellow]Нет данных[/yellow]")
             return
         table = Table(title=title, style=style)
         table.add_column("Монета", style="bold")

@@ -1,6 +1,6 @@
 import typer
-import formatters
 import providers
+import formatters
 from providers.factory import ProviderFactory
 from formatters.factory import FormatterFactory
 from models.portfolio import CryptoPortfolio
@@ -18,16 +18,13 @@ def analyze(
 ):
     """Анализирует рынок криптовалют и выводит результат."""
     
-    # 1. Получаем данные через провайдер
     provider = ProviderFactory.create(source)
     assets = provider.get_assets()
 
-    # 2. Анализируем через портфель
     portfolio = CryptoPortfolio(assets)
     gainers = portfolio.top_gainers(top)
     losers = portfolio.top_losers(top)
 
-    # 3. Выводим через форматтер
     formatter = FormatterFactory.create(output)
     formatter.format(gainers, losers)
 
@@ -36,13 +33,14 @@ def analyze(
     storage = StorageFactory.create(settings)
     results = {
         "top_gainers": [
-            {"name": a.name, "symbol": a.symbol, "price": a.price, "change_24h": a.change_24h}
+            {
+                "name": a.name,
+                "symbol": a.symbol,
+                "price": a.price,
+                "change_24h": a.change_24h
+            }
             for a in gainers
-        ],
-        "top_losers": [
-            {"name": a.name, "symbol": a.symbol, "price": a.price, "change_24h": a.change_24h}
-            for a in losers
-        ],
+        ]
     }
     storage.save(results)
 

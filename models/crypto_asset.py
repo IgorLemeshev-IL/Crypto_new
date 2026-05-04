@@ -1,5 +1,5 @@
 class CryptoAsset:
-    """Класс одной криптовалюты. Инкапсулирует все данные об активе."""
+    """Класс одной криптовалюты."""
 
     def __init__(self, name: str, symbol: str, price: float, change_24h: float, volume: float = 0.0):
         self._validate_str(name, "name")
@@ -28,12 +28,7 @@ class CryptoAsset:
         return f"{self.name} ({self.symbol}): ${self.price:.2f} ({self.change_24h:+.2f}%)"
 
     def __repr__(self):
-        return (
-            f"CryptoAsset(name={self.name}, "
-            f"symbol={self.symbol}, "
-            f"price={self.price}, "
-            f"change_24h={self.change_24h})"
-        )
+        return f"CryptoAsset(name={self.name}, symbol={self.symbol}, price={self.price}, change_24h={self.change_24h})"
 
     def __lt__(self, other):
         if not isinstance(other, CryptoAsset):

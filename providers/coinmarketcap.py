@@ -5,8 +5,6 @@ from settings import Settings
 
 
 class CoinMarketCapProvider(CryptoProvider):
-    """Провайдер данных с CoinMarketCap API (требует API-ключ)."""
-
     BASE_URL = "https://pro-api.coinmarketcap.com"
 
     def __init__(self):
@@ -16,7 +14,6 @@ class CoinMarketCapProvider(CryptoProvider):
         url = f"{self.BASE_URL}/v1/cryptocurrency/listings/latest"
         headers = {"X-CMC_PRO_API_KEY": self.api_key}
         params = {"limit": 50, "convert": "USD"}
-
         with requests.Session() as session:
             response = session.get(url, headers=headers, params=params)
             response.raise_for_status()
@@ -25,13 +22,10 @@ class CoinMarketCapProvider(CryptoProvider):
         assets = []
         for item in data:
             quote = item["quote"]["USD"]
-            asset = CryptoAsset(
-                name=item["name"],
-                symbol=item["symbol"],
+            assets.append(CryptoAsset(
+                name=item["name"], symbol=item["symbol"],
                 price=quote["price"],
                 change_24h=quote.get("percent_change_24h") or 0,
                 volume=quote.get("volume_24h") or 0,
-            )
-            assets.append(asset)
-
+            ))
         return assets

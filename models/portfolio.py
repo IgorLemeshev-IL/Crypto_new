@@ -17,8 +17,8 @@ class CryptoPortfolio:
         return sorted(self.assets, key=lambda x: x.change_24h)[:n]
 
     def highest_volume(self) -> CryptoAsset:
-        """Актив с максимальной ценой (косвенный показатель объёма)."""
-        return max(self.assets, key=lambda x: x.price)
+        """Актив с максимальным объёмом торгов."""
+        return max(self.assets, key=lambda x: x.volume)
 
     def total_value(self) -> float:
         """Суммарная стоимость всех активов."""

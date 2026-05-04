@@ -2,8 +2,6 @@ from formatters.base import OutputFormatter
 
 
 class FormatterFactory:
-    """Фабрика форматтеров — реестр (Registry pattern)."""
-
     _formatters: dict[str, type[OutputFormatter]] = {}
 
     @classmethod

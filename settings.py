@@ -12,10 +12,6 @@ class StorageType(Enum):
 
 class Settings:
     storage: StorageType = StorageType(os.getenv("STORAGE", "json"))
-    cmc_api_key: str = os.getenv("CMC_API_KEY", "")
-
-    def __post_init__(self):
-        pass  # Для совместимости, если будем использовать dataclass
 
     @classmethod
     def get_cmc_api_key(cls) -> str:
