@@ -59,15 +59,15 @@ def analyze_data(data: list[dict]) -> dict:
     
     # Топ-3 лидера роста (по price_change_percentage_24h)
     top_gainers = sorted(
-        data, 
-        key=lambda x: x.get("price_change_percentage_24h") or 0, 
+        data,
+        key=lambda x: x.get("price_change_percentage_24h") if x.get("price_change_percentage_24h") is not None else 0,
         reverse=True
     )[:3]
     
     # Топ-3 лидера падения
     top_losers = sorted(
-        data, 
-        key=lambda x: x.get("price_change_percentage_24h") or 0
+        data,
+        key=lambda x: x.get("price_change_percentage_24h") if x.get("price_change_percentage_24h") is not None else 0
     )[:3]
     
     # Монета с максимальным объёмом торгов (total_volume)
