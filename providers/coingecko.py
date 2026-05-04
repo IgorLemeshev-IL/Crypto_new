@@ -6,11 +6,13 @@ from models.crypto_asset import CryptoAsset
 class CoinGeckoProvider(CryptoProvider):
     """Провайдер данных с CoinGecko API (бесплатный, без ключа)."""
 
+    BASE_URL = "https://api.coingecko.com"
+
     def __init__(self, per_page: int = 50):
         self.per_page = per_page
-        self.url = "https://api.coingecko.com/api/v3/coins/markets"
 
     def get_assets(self) -> list[CryptoAsset]:
+        url = f"{self.BASE_URL}/api/v3/coins/markets"
         params = {
             "vs_currency": "usd",
             "order": "market_cap_desc",
@@ -18,7 +20,7 @@ class CoinGeckoProvider(CryptoProvider):
             "page": 1,
         }
         with requests.Session() as session:
-            response = session.get(self.url, params=params)
+            response = session.get(url, params=params)
             response.raise_for_status()
             data = response.json()
 
