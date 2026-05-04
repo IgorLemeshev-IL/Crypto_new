@@ -5,10 +5,10 @@ from formatters.base import OutputFormatter
 
 
 class CSVFormatter(OutputFormatter):
-    """Вывод результатов в формате CSV."""
-
-    def format(self, assets: list[CryptoAsset]) -> None:
+    def format(self, gainers: list[CryptoAsset], losers: list[CryptoAsset]) -> None:
         writer = csv.writer(sys.stdout)
-        writer.writerow(["name", "symbol", "price", "change_24h"])
-        for a in assets:
-            writer.writerow([a.name, a.symbol, a.price, a.change_24h])
+        writer.writerow(["type", "name", "symbol", "price", "change_24h"])
+        for a in gainers:
+            writer.writerow(["gainer", a.name, a.symbol, a.price, a.change_24h])
+        for a in losers:
+            writer.writerow(["loser", a.name, a.symbol, a.price, a.change_24h])
