@@ -29,6 +29,7 @@ class CoinGeckoProvider(CryptoProvider):
                 symbol=item["symbol"],
                 price=item["current_price"],
                 change_24h=item.get("price_change_percentage_24h") or 0,
+                volume=item.get("total_volume") or 0,
             )
             assets.append(asset)
 

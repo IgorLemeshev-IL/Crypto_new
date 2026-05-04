@@ -31,6 +31,7 @@ class CoinMarketCapProvider(CryptoProvider):
                 symbol=item["symbol"],
                 price=quote["price"],
                 change_24h=quote.get("percent_change_24h") or 0,
+                volume=quote.get("volume_24h") or 0,
             )
             assets.append(asset)
 
