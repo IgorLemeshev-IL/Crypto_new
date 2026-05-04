@@ -14,17 +14,15 @@ def analyze(
 ):
     """Анализирует рынок криптовалют и выводит результат."""
     
-    # 1. Получаем данные через провайдер
     provider = ProviderFactory.create(source)
     assets = provider.get_assets()
 
-    # 2. Анализируем через портфель
     portfolio = CryptoPortfolio(assets)
     gainers = portfolio.top_gainers(top)
+    losers = portfolio.top_losers(top)
 
-    # 3. Выводим через форматтер
     formatter = FormatterFactory.create(output)
-    formatter.format(gainers)
+    formatter.format(gainers, losers)
 
 
 if __name__ == "__main__":
