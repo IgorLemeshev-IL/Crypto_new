@@ -1,0 +1,18 @@
+[project]
+name = "crypto-analyzer"
+version = "1.0.0"
+description = "Крипто-анализатор рынка"
+requires-python = ">=3.12"
+
+dependencies = [
+    "requests>=2.31",
+    "rich>=13.0",
+    "typer>=0.12",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=9.0",
+    "pytest-cov>=7.0",
+]

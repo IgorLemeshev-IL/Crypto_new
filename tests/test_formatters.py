@@ -1,7 +1,6 @@
 import json
 import pytest
 from unittest.mock import patch, Mock
-
 from formatters.console import ConsoleFormatter
 from formatters.json import JSONFormatter
 from formatters.csv import CSVFormatter
@@ -34,17 +33,14 @@ class TestJSONFormatter:
         formatter = JSONFormatter()
         with patch("builtins.print") as mock_print:
             formatter.format(sample_assets_list[:2], sample_assets_list[2:])
-            output = mock_print.call_args[0][0]
-            data = json.loads(output)
-            assert "top_gainers" in data
-            assert "top_losers" in data
+            data = json.loads(mock_print.call_args[0][0])
+            assert "top_gainers" in data and "top_losers" in data
 
     def test_format_empty(self):
         formatter = JSONFormatter()
         with patch("builtins.print") as mock_print:
             formatter.format([], [])
-            output = mock_print.call_args[0][0]
-            data = json.loads(output)
+            data = json.loads(mock_print.call_args[0][0])
             assert data == {"top_gainers": [], "top_losers": []}
 
 
@@ -76,8 +72,7 @@ class TestFormatterFactory:
         ("csv", CSVFormatter),
     ])
     def test_create(self, name, expected_class):
-        formatter = FormatterFactory.create(name)
-        assert isinstance(formatter, expected_class)
+        assert isinstance(FormatterFactory.create(name), expected_class)
 
     def test_unknown_formatter(self):
         with pytest.raises(ValueError, match="Unknown formatter"):
