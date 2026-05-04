@@ -1,4 +1,5 @@
 import typer
+import formatters
 from providers.factory import ProviderFactory
 from formatters.factory import FormatterFactory
 from models.portfolio import CryptoPortfolio

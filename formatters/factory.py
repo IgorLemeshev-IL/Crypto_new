@@ -1,18 +1,18 @@
-from formatters.console import ConsoleFormatter
-from formatters.json import JSONFormatter
-from formatters.csv import CSVFormatter
 from formatters.base import OutputFormatter
 
 
 class FormatterFactory:
-    """Фабрика форматтеров — создаёт нужный форматтер по имени."""
+    """Фабрика форматтеров — реестр (Registry pattern)."""
 
-    @staticmethod
-    def create(name: str) -> OutputFormatter:
-        if name == "console":
-            return ConsoleFormatter()
-        if name == "json":
-            return JSONFormatter()
-        if name == "csv":
-            return CSVFormatter()
-        raise ValueError(f"Unknown formatter: {name}")
+    _formatters: dict[str, type[OutputFormatter]] = {}
+
+    @classmethod
+    def register(cls, name: str, formatter_class: type[OutputFormatter]) -> None:
+        cls._formatters[name] = formatter_class
+
+    @classmethod
+    def create(cls, name: str) -> OutputFormatter:
+        formatter_class = cls._formatters.get(name)
+        if formatter_class is None:
+            raise ValueError(f"Unknown formatter: {name}")
+        return formatter_class()
