@@ -13,4 +13,5 @@ class CoinPriceViewSet(ReadOnlyModelViewSet):
     queryset = CoinPrice.objects.all()
     serializer_class = CoinPriceSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['symbol']
+    filterset_fields = ['symbol']
+    search_fields = ['name']
