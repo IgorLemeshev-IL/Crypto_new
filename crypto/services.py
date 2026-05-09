@@ -37,7 +37,7 @@ class WatchlistService:
 
     def _validate_symbol(self, symbol: str):
         """Проверяет существование символа через API биржи."""
-        provider = ProviderFactory.create("coingecko")
+        provider = ProviderFactory.create(settings.EXCHANGE_PROVIDER)
         assets = provider.get_assets()
         valid_symbols = {a.symbol.upper() for a in assets}
         if symbol not in valid_symbols:
