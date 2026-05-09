@@ -1,9 +1,12 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import SnapshotViewSet, CoinPriceViewSet
+from .views import SnapshotViewSet, CoinPriceViewSet, WatchlistView, WatchlistDeleteView
 
+router = DefaultRouter()
+router.register(r'snapshots', SnapshotViewSet)
+router.register(r'coins', CoinPriceViewSet)
 
-router = DefaultRouter() # ---> атоматом создаю urls для ViewSet
-router.register(r'snapshots', SnapshotViewSet) # /api/snapshots/ # /api/snapshots/{id}
-router.register(r'coins', CoinPriceViewSet) # /api/coins/
-
-urlpatterns = router.urls 
+urlpatterns = [
+    path('watchlist/', WatchlistView.as_view(), name='watchlist'),
+    path('watchlist/<str:symbol>/', WatchlistDeleteView.as_view(), name='watchlist-delete'),
+] + router.urls
