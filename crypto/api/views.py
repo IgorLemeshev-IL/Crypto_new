@@ -1,16 +1,13 @@
+from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.filters import SearchFilter
-from crypto.models import Snapshot, CoinPrice
-from .serializers import SnapshotSerializer, CoinPriceSerializer
-from rest_framework import APIView
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
+from crypto.models import Snapshot, CoinPrice
 from crypto.services import WatchlistService
-from .serializers import WatchlistItemSerializer
+from .serializers import SnapshotSerializer, CoinPriceSerializer, WatchlistItemSerializer
 
 
 class SnapshotViewSet(ReadOnlyModelViewSet):
