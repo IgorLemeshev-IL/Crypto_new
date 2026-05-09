@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Snapshot(models.Model):
     """Снимок рынка — фиксирует момент времени."""
@@ -25,3 +25,17 @@ class CoinPrice(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.symbol}) — ${self.price}"
+
+
+class WatchlistItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='watchlist')
+    symbol = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'symbol')  # нельзя добавить одну монету дважды
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} → {self.symbol}"
+
