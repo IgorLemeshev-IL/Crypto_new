@@ -1,6 +1,7 @@
 import requests
-from providers.base import CryptoProvider
+
 from models.crypto_asset import CryptoAsset
+from providers.base import CryptoProvider
 from settings import Settings
 
 
@@ -22,10 +23,13 @@ class CoinMarketCapProvider(CryptoProvider):
         assets = []
         for item in data:
             quote = item["quote"]["USD"]
-            assets.append(CryptoAsset(
-                name=item["name"], symbol=item["symbol"],
-                price=quote["price"],
-                change_24h=quote.get("percent_change_24h") or 0,
-                volume=quote.get("volume_24h") or 0,
-            ))
+            assets.append(
+                CryptoAsset(
+                    name=item["name"],
+                    symbol=item["symbol"],
+                    price=quote["price"],
+                    change_24h=quote.get("percent_change_24h") or 0,
+                    volume=quote.get("volume_24h") or 0,
+                )
+            )
         return assets

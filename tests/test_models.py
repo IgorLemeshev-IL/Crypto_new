@@ -1,4 +1,5 @@
 import pytest
+
 from models.crypto_asset import CryptoAsset
 
 
@@ -21,11 +22,14 @@ class TestCryptoAssetValidation:
         with pytest.raises(TypeError, match="change_24h"):
             CryptoAsset("Bitcoin", "BTC", 100.0, "invalid")
 
-    @pytest.mark.parametrize("name,symbol,price,change", [
-        ("Bitcoin", "BTC", 50000.0, 2.5),
-        ("Ethereum", "ETH", 3000.0, -1.2),
-        ("X", "X", 0.0001, 999.9),
-    ])
+    @pytest.mark.parametrize(
+        "name,symbol,price,change",
+        [
+            ("Bitcoin", "BTC", 50000.0, 2.5),
+            ("Ethereum", "ETH", 3000.0, -1.2),
+            ("X", "X", 0.0001, 999.9),
+        ],
+    )
     def test_valid_data_passes(self, name, symbol, price, change):
         asset = CryptoAsset(name, symbol, price, change)
         assert asset.name == name

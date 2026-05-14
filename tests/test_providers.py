@@ -1,11 +1,11 @@
-import pytest
-from unittest.mock import Mock, MagicMock
-from unittest.mock import patch
+from unittest.mock import MagicMock, Mock, patch
 
+import pytest
+
+from models.crypto_asset import CryptoAsset
+from providers.base import CryptoProvider
 from providers.coingecko import CoinGeckoProvider
 from providers.coinmarketcap import CoinMarketCapProvider
-from providers.base import CryptoProvider
-from models.crypto_asset import CryptoAsset
 
 
 class TestCoinGeckoProvider:
@@ -65,7 +65,7 @@ class TestCoinMarketCapProvider:
 
             provider = CoinMarketCapProvider()
             with pytest.raises(KeyError):
-                provider.get_assets() 
+                provider.get_assets()
 
 
 class TestProviderFactory:
@@ -73,15 +73,18 @@ class TestProviderFactory:
 
     def test_create_coingecko(self):
         from providers.factory import ProviderFactory
+
         provider = ProviderFactory.create("coingecko")
         assert isinstance(provider, CoinGeckoProvider)
 
     def test_create_coinmarketcap(self):
         from providers.factory import ProviderFactory
+
         provider = ProviderFactory.create("coinmarketcap")
         assert isinstance(provider, CoinMarketCapProvider)
 
     def test_unknown_provider(self):
         from providers.factory import ProviderFactory
+
         with pytest.raises(ValueError, match="Unknown provider"):
             ProviderFactory.create("binance")

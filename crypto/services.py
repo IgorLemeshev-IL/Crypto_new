@@ -1,6 +1,8 @@
-from providers.factory import ProviderFactory
-from crypto.models import WatchlistItem
+from django.conf import settings
 from django.contrib.auth.models import User
+
+from crypto.models import WatchlistItem
+from providers.factory import ProviderFactory
 
 
 class WatchlistService:
@@ -29,9 +31,7 @@ class WatchlistService:
     def remove_item(self, symbol: str):
         """Удаляет символ из watchlist."""
         symbol = symbol.upper().strip()
-        deleted, _ = WatchlistItem.objects.filter(
-            user=self.user, symbol=symbol
-        ).delete()
+        deleted, _ = WatchlistItem.objects.filter(user=self.user, symbol=symbol).delete()
         if deleted == 0:
             raise ValueError(f"{symbol} нет в watchlist")
 

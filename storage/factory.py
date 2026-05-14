@@ -1,4 +1,4 @@
-from settings import Settings, StorageType
+from settings import Settings
 from storage.base import BaseStorage
 from storage.json_storage import JsonStorage
 from storage.sqlite_storage import SqliteStorage

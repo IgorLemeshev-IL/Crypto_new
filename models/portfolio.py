@@ -1,18 +1,17 @@
-from typing import List
 from models.crypto_asset import CryptoAsset
 
 
 class CryptoPortfolio:
     """Коллекция криптоактивов с методами анализа."""
 
-    def __init__(self, assets: List[CryptoAsset]):
+    def __init__(self, assets: list[CryptoAsset]):
         self.assets = assets
 
-    def top_gainers(self, n: int = 3) -> List[CryptoAsset]:
+    def top_gainers(self, n: int = 3) -> list[CryptoAsset]:
         """Топ-n лидеров роста."""
         return sorted(self.assets, key=lambda x: x.change_24h, reverse=True)[:n]
 
-    def top_losers(self, n: int = 3) -> List[CryptoAsset]:
+    def top_losers(self, n: int = 3) -> list[CryptoAsset]:
         """Топ-n лидеров падения."""
         return sorted(self.assets, key=lambda x: x.change_24h)[:n]
 
@@ -24,11 +23,11 @@ class CryptoPortfolio:
         """Суммарная стоимость всех активов."""
         return sum(a.price for a in self.assets)
 
-    def filter_positive(self) -> List[CryptoAsset]:
+    def filter_positive(self) -> list[CryptoAsset]:
         """Только растущие активы."""
         return [a for a in self.assets if a.change_24h > 0]
 
-    def filter_negative(self) -> List[CryptoAsset]:
+    def filter_negative(self) -> list[CryptoAsset]:
         """Только падающие активы."""
         return [a for a in self.assets if a.change_24h < 0]
 

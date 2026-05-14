@@ -5,35 +5,46 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Snapshot',
+            name="Snapshot",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='CoinPrice',
+            name="CoinPrice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('symbol', models.CharField(max_length=50)),
-                ('price', models.FloatField()),
-                ('change_24h', models.FloatField()),
-                ('snapshot', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='prices', to='crypto.snapshot')),
+                (
+                    "id",
+                    models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("symbol", models.CharField(max_length=50)),
+                ("price", models.FloatField()),
+                ("change_24h", models.FloatField()),
+                (
+                    "snapshot",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="prices",
+                        to="crypto.snapshot",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-change_24h'],
+                "ordering": ["-change_24h"],
             },
         ),
     ]

@@ -1,11 +1,10 @@
 import typer
-import providers
-import formatters
-from providers.factory import ProviderFactory
+
 from formatters.factory import FormatterFactory
 from models.portfolio import CryptoPortfolio
-from storage.factory import StorageFactory
+from providers.factory import ProviderFactory
 from settings import Settings
+from storage.factory import StorageFactory
 
 app = typer.Typer()
 
@@ -17,7 +16,7 @@ def analyze(
     top: int = typer.Option(3, "--top", "-t", help="Количество лидеров роста/падения"),
 ):
     """Анализирует рынок криптовалют и выводит результат."""
-    
+
     provider = ProviderFactory.create(source)
     assets = provider.get_assets()
 
@@ -32,33 +31,28 @@ def analyze(
     settings = Settings()
     storage = StorageFactory.create(settings)
     results = {
-        "top_gainers": [
-            {
-                "name": a.name,
-                "symbol": a.symbol,
-                "price": a.price,
-                "change_24h": a.change_24h
-            }
-            for a in gainers
-        ]
+        "top_gainers": [{"name": a.name, "symbol": a.symbol, "price": a.price, "change_24h": a.change_24h} for a in gainers]
     }
     storage.save(results)
+
 
 @app.command()
 def list_snapshots():
     """Выводит список всех сохранённых снимков."""
     from storage.sqlite_storage import SqliteStorage
+
     storage = SqliteStorage()
     snapshots = storage.list_snapshots()
-    
+
     if not snapshots:
         print("Снимков пока нет.")
         return
-    
+
     print(f"{'ID':<5} {'Дата и время'}")
     print("-" * 30)
     for s in snapshots:
         print(f"{s['id']:<5} {s['created_at']}")
+
 
 @app.command()
 def compare_snapshots(
@@ -67,13 +61,14 @@ def compare_snapshots(
 ):
     """Сравнивает два снимка по ID."""
     from storage.sqlite_storage import SqliteStorage
+
     storage = SqliteStorage()
     result = storage.compare_snapshots(id1, id2)
-    
+
     if not result:
         print("Нет данных для сравнения.")
         return
-    
+
     print(f"Сравнение снимков {id1} → {id2}:")
     print(f"{'Монета':<20} {'Цена до':<12} {'Цена после':<12} {'Разница':<10}")
     print("-" * 55)

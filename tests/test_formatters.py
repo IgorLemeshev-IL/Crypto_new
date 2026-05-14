@@ -1,11 +1,13 @@
 import json
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
-from formatters.console import ConsoleFormatter
-from formatters.json import JSONFormatter
-from formatters.csv import CSVFormatter
+
 from formatters.base import OutputFormatter
+from formatters.console import ConsoleFormatter
+from formatters.csv import CSVFormatter
 from formatters.factory import FormatterFactory
+from formatters.json import JSONFormatter
 
 
 class TestConsoleFormatter:
@@ -66,11 +68,14 @@ class TestCSVFormatter:
 
 
 class TestFormatterFactory:
-    @pytest.mark.parametrize("name,expected_class", [
-        ("console", ConsoleFormatter),
-        ("json", JSONFormatter),
-        ("csv", CSVFormatter),
-    ])
+    @pytest.mark.parametrize(
+        "name,expected_class",
+        [
+            ("console", ConsoleFormatter),
+            ("json", JSONFormatter),
+            ("csv", CSVFormatter),
+        ],
+    )
     def test_create(self, name, expected_class):
         assert isinstance(FormatterFactory.create(name), expected_class)
 

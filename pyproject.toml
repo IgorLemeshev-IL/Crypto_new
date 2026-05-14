@@ -16,3 +16,24 @@ test = [
     "pytest>=9.0",
     "pytest-cov>=7.0",
 ]
+
+[tool.ruff]
+line-length = 130
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "crypto.models"
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"

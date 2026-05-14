@@ -1,5 +1,5 @@
 import pytest
-from models.crypto_asset import CryptoAsset
+
 from models.portfolio import CryptoPortfolio
 
 
