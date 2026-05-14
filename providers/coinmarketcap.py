@@ -14,7 +14,7 @@ class CoinMarketCapProvider(CryptoProvider):
     def get_assets(self) -> list[CryptoAsset]:
         url = f"{self.BASE_URL}/v1/cryptocurrency/listings/latest"
         headers = {"X-CMC_PRO_API_KEY": self.api_key}
-        params = {"limit": 50, "convert": "USD"}
+        params: dict[str, str | int] = {"limit": 50, "convert": "USD"}
         with requests.Session() as session:
             response = session.get(url, headers=headers, params=params)
             response.raise_for_status()

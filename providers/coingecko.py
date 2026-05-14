@@ -14,7 +14,7 @@ class CoinGeckoProvider(CryptoProvider):
 
     def get_assets(self) -> list[CryptoAsset]:
         url = f"{self.BASE_URL}/api/v3/coins/markets"
-        params = {
+        params: dict[str, str | int] = {
             "vs_currency": "usd",
             "order": "market_cap_desc",
             "per_page": self.per_page,

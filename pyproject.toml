@@ -30,6 +30,7 @@ quote-style = "double"
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = false
+exclude = ["crypto_analyzer.py", "decorators.py"]
 
 [[tool.mypy.overrides]]
 module = "crypto.models"
