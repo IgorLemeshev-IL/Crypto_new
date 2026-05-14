@@ -3,7 +3,7 @@ from providers.coingecko import CoinGeckoProvider
 from crypto.models import Snapshot, CoinPrice
 import requests
 
-
+# Вынесли логику сбора снимка в отдельную функцию с декоратором @shared_task:
 @shared_task(bind=True, max_retries=3, default_retry_delay=10)
 def fetch_snapshot_task(self):
     """Celery-задача сбора снимка с retry при ошибках API."""

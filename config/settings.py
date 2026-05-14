@@ -15,6 +15,7 @@ from pathlib import Path
 from sre_constants import IN
 import sys
 from datetime import timedelta
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -148,9 +149,16 @@ SIMPLE_JWT = {
 
 EXCHANGE_PROVIDER = os.getenv("EXCHANGE_PROVIDER", "coingecko")
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+CELERY_BROKER_URL = 'redis://localhost:6379/0' # очередь задач 
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1' # хранение результатов
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
+
+CELERY_BEAT_SCHEDULE = {
+    'fetch-snapshot-every-hour': {
+        'task': 'crypto.tasks.fetch_snapshot_task',
+        'schedule': crontab(minute='0', hour='*'),  # каждый час
+    },
+}
