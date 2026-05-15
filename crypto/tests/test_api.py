@@ -65,3 +65,11 @@ class TestWatchlistAPI:
             assert response.status_code == 200
 
         assert len(queries) <= 4  # prefetch должен уложиться в 4 запроса
+
+    def test_throttle_anon_429(self, client):
+        """Аноним получает 429 после превышения лимита."""
+        for _ in range(5):
+            response = client.get("/api/v1/snapshots/")
+            assert response.status_code == 200
+        response = client.get("/api/v1/snapshots/")
+        assert response.status_code == 429
