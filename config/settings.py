@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "crypto",
     "rest_framework",
     "debug_toolbar",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -145,6 +146,7 @@ REST_FRAMEWORK = {
         "anon": "5/minute",
         "user": "100/minute",
     },
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -166,4 +168,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "crypto.tasks.fetch_snapshot_task",
         "schedule": crontab(minute="0", hour="*"),  # каждый час
     },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Crypto Analyzer API",
+    "DESCRIPTION": "API для анализа криптовалют",
+    "VERSION": "1.0.0",
 }
