@@ -8,6 +8,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from crypto.analytics_service import AnalyticsService
 from crypto.models import CoinPrice, Snapshot
+from crypto.permissions import IsAdminOrReadOnly
 from crypto.services import WatchlistService
 from crypto.tasks import fetch_snapshot_task
 
@@ -17,6 +18,7 @@ from .serializers import CoinPriceSerializer, SnapshotSerializer, WatchlistItemS
 class SnapshotViewSet(ReadOnlyModelViewSet):
     queryset = Snapshot.objects.prefetch_related("prices").all()
     serializer_class = SnapshotSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class CoinPriceViewSet(ReadOnlyModelViewSet):
@@ -90,6 +92,8 @@ class CoinsFilterView(APIView):
 
 
 class FetchSnapshotView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def post(self, request):
         task = fetch_snapshot_task.delay()
         return Response({"task_id": task.id, "status": "accepted"}, status=status.HTTP_202_ACCEPTED)
