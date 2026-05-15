@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from celery.exceptions import Retry
+from django.core.cache import cache
 
 
 class FakeAsset:
@@ -58,6 +59,7 @@ class TestTaskAPI:
         assert "task_id" in response.json()
 
     def test_task_status_pending(self, client):
+        cache.clear()
         response = client.get("/api/v1/tasks/non-existent-id/")
         assert response.status_code == 200
         assert response.json()["status"] == "PENDING"

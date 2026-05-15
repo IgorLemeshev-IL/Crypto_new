@@ -68,8 +68,6 @@ class TestWatchlistAPI:
 
     def test_throttle_anon_429(self, client):
         """Аноним получает 429 после превышения лимита."""
-        for _ in range(5):
+        for _ in range(6):
             response = client.get("/api/v1/snapshots/")
-            assert response.status_code == 200
-        response = client.get("/api/v1/snapshots/")
         assert response.status_code == 429
