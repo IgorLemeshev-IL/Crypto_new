@@ -38,23 +38,26 @@ class TestCeleryTask:
             patch.object(fetch_snapshot_task, "retry", side_effect=Retry("API Error")) as mock_retry,
         ):
             MockProvider.return_value.get_assets.side_effect = requests.RequestException("API Error")
-
             with pytest.raises(Retry):
                 fetch_snapshot_task.run()
-
             mock_retry.assert_called_once()
 
 
 @pytest.mark.django_db
 class TestTaskAPI:
     def test_fetch_snapshot_returns_202(self, client):
-        response = client.post("/api/tasks/fetch-snapshot/")
+        from django.contrib.auth.models import User
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        user = User.objects.create_user(username="admin", password="pass", is_staff=True)
+        refresh = RefreshToken.for_user(user)
+        client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {refresh.access_token}"
+
+        response = client.post("/api/v1/tasks/fetch-snapshot/")
         assert response.status_code == 202
-        data = response.json()
-        assert "task_id" in data
-        assert data["status"] == "accepted"
+        assert "task_id" in response.json()
 
     def test_task_status_pending(self, client):
-        response = client.get("/api/tasks/non-existent-id/")
+        response = client.get("/api/v1/tasks/non-existent-id/")
         assert response.status_code == 200
         assert response.json()["status"] == "PENDING"

@@ -21,25 +21,25 @@ class TestWatchlistAPI:
         return client
 
     def test_get_empty_watchlist(self, auth_client):
-        response = auth_client.get("/api/watchlist/")
+        response = auth_client.get("/api/v1/watchlist/")
         assert response.status_code == 200
         assert response.json() == []
 
     def test_add_to_watchlist(self, auth_client):
         # Мокаем валидацию чтобы не ходить в API
         with patch("crypto.services.WatchlistService._validate_symbol"):
-            response = auth_client.post("/api/watchlist/", {"symbol": "BTC"}, format="json")
+            response = auth_client.post("/api/v1/watchlist/", {"symbol": "BTC"}, format="json")
         assert response.status_code == 201
         assert response.json()["symbol"] == "BTC"
 
     def test_delete_from_watchlist(self, auth_client):
         with patch("crypto.services.WatchlistService._validate_symbol"):
-            auth_client.post("/api/watchlist/", {"symbol": "BTC"}, format="json")
-        response = auth_client.delete("/api/watchlist/BTC/")
+            auth_client.post("/api/v1/watchlist/", {"symbol": "BTC"}, format="json")
+        response = auth_client.delete("/api/v1/watchlist/BTC/")
         assert response.status_code == 204
 
     def test_unauthorized_access(self, client):
-        response = client.get("/api/watchlist/")
+        response = client.get("/api/v1/watchlist/")
         assert response.status_code == 401
 
     def test_isolation_between_users(self, auth_client, user):
@@ -49,7 +49,7 @@ class TestWatchlistAPI:
         with patch.object(WatchlistService, "_validate_symbol"):
             WatchlistService(other_user).add_item("ETH")
 
-        response = auth_client.get("/api/watchlist/")
+        response = auth_client.get("/api/v1/watchlist/")
         assert len(response.json()) == 0  # testuser не видит ETH от other
 
     def test_snapshots_query_count(self, client):
@@ -61,7 +61,7 @@ class TestWatchlistAPI:
         CoinPrice.objects.create(snapshot=s, name="ETH", symbol="eth", price=3000, change_24h=-1.2)
 
         with CaptureQueriesContext(connection) as queries:
-            response = client.get("/api/snapshots/")
+            response = client.get("/api/v1/snapshots/")
             assert response.status_code == 200
 
         assert len(queries) <= 4  # prefetch должен уложиться в 4 запроса
