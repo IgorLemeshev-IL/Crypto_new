@@ -1,12 +1,14 @@
 from celery.result import AsyncResult
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from crypto.analytics_service import AnalyticsService
+from crypto.filters import CoinPriceFilter
 from crypto.models import CoinPrice, Snapshot
 from crypto.permissions import IsAdminOrReadOnly
 from crypto.services import WatchlistService
@@ -24,8 +26,10 @@ class SnapshotViewSet(ReadOnlyModelViewSet):
 class CoinPriceViewSet(ReadOnlyModelViewSet):
     queryset = CoinPrice.objects.all()
     serializer_class = CoinPriceSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ["symbol"]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = CoinPriceFilter
+    search_fields = ["symbol", "name"]
+    ordering_fields = ["price", "change_24h"]
 
 
 class WatchlistView(APIView):
