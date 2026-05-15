@@ -2,6 +2,7 @@ from celery.result import AsyncResult
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,6 +31,11 @@ class CoinPriceViewSet(ReadOnlyModelViewSet):
     filterset_class = CoinPriceFilter
     search_fields = ["symbol", "name"]
     ordering_fields = ["price", "change_24h"]
+
+
+class CoinPriceCursorPagination(CursorPagination):
+    page_size = 10
+    ordering = "-id"
 
 
 class WatchlistView(APIView):
