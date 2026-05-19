@@ -9,6 +9,8 @@ from crypto.models import Snapshot, CoinPrice
 from crypto.services import WatchlistService
 from .serializers import SnapshotSerializer, CoinPriceSerializer, WatchlistItemSerializer
 
+from rest_framework.decorators import api_view
+from crypto.analytics_service import AnalyticsService
 
 class SnapshotViewSet(ReadOnlyModelViewSet):
     queryset = Snapshot.objects.prefetch_related('prices').all() # загружаем все цены для снимков 1 запросома не для каждого запрос 
@@ -53,3 +55,34 @@ class WatchlistDeleteView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class MarketStatsView(APIView):
+    def get(self, request):
+        stats = AnalyticsService.market_stats()
+        if stats is None:
+            return Response({'error': 'No snapshots'}, status=404)
+        return Response(stats)
+
+
+class TopMoversView(APIView):
+    def get(self, request):
+        limit = int(request.query_params.get('limit', 10))
+        return Response(AnalyticsService.top_movers(limit))
+
+
+class VolumeLeadersView(APIView):
+    def get(self, request):
+        limit = int(request.query_params.get('limit', 10))
+        return Response(AnalyticsService.volume_leaders(limit))
+
+
+class CoinsFilterView(APIView):
+    def get(self, request):
+        min_price = request.query_params.get('min_price')
+        max_price = request.query_params.get('max_price')
+        result = AnalyticsService.filter_by_price_range(
+            float(min_price) if min_price else None,
+            float(max_price) if max_price else None,
+        )
+        return Response(result)

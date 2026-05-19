@@ -1,6 +1,9 @@
 import pytest
 from django.contrib.auth.models import User
 from unittest.mock import patch
+from django.test.utils import CaptureQueriesContext
+from django.db import connection
+
 
 @pytest.mark.django_db
 class TestWatchlistAPI:
@@ -47,3 +50,16 @@ class TestWatchlistAPI:
         
         response = auth_client.get('/api/watchlist/')
         assert len(response.json()) == 0  # testuser не видит ETH от other
+
+    def test_snapshots_query_count(self, client):
+        """Проверяем prefetch_related (не более 4 запросов)."""
+        from crypto.models import Snapshot, CoinPrice
+        s = Snapshot.objects.create()
+        CoinPrice.objects.create(snapshot=s, name='BTC', symbol='btc', price=50000, change_24h=2.5)
+        CoinPrice.objects.create(snapshot=s, name='ETH', symbol='eth', price=3000, change_24h=-1.2)
+    
+        with CaptureQueriesContext(connection) as queries:
+            response = client.get('/api/snapshots/')
+            assert response.status_code == 200
+    
+        assert len(queries) <= 4  # prefetch должен уложиться в 4 запроса
