@@ -1,10 +1,12 @@
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable, Any
+from typing import Any
 
 
 def retry(max_attempts: int = 3, delay: int = 2):
     """Повторяет функцию при ошибке."""
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any):
@@ -17,5 +19,7 @@ def retry(max_attempts: int = 3, delay: int = 2):
                     if attempt < max_attempts:
                         time.sleep(delay)
             raise last_exception
+
         return wrapper
+
     return decorator

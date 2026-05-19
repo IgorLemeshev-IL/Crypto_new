@@ -1,7 +1,9 @@
-from celery import shared_task
-from providers.coingecko import CoinGeckoProvider
-from crypto.models import Snapshot, CoinPrice
 import requests
+from celery import shared_task
+
+from crypto.models import CoinPrice, Snapshot
+from providers.coingecko import CoinGeckoProvider
+
 
 # Вынесли логику сбора снимка в отдельную функцию с декоратором @shared_task:
 @shared_task(bind=True, max_retries=3, default_retry_delay=10)
@@ -12,7 +14,7 @@ def fetch_snapshot_task(self):
         assets = provider.get_assets()
     except requests.RequestException as e:
         # Сетевые ошибки — retry с экспоненциальным backoff
-        countdown = 10 * (2 ** self.request.retries)
+        countdown = 10 * (2**self.request.retries)
         raise self.retry(exc=e, countdown=countdown)
 
     snapshot = Snapshot.objects.create()
@@ -26,6 +28,6 @@ def fetch_snapshot_task(self):
         )
 
     return {
-        'snapshot_id': snapshot.id,
-        'coins_count': len(assets),
+        "snapshot_id": snapshot.id,
+        "coins_count": len(assets),
     }

@@ -1,11 +1,11 @@
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-import os
 
 from models.crypto_asset import CryptoAsset
 
-
 # ========== ТЕСТОВЫЕ ДАННЫЕ ==========
+
 
 @pytest.fixture
 def sample_asset():
@@ -25,12 +25,28 @@ def sample_assets_list():
 
 # ========== MOCK ОТВЕТЫ API ==========
 
+
 @pytest.fixture
 def mock_coingecko_response():
     return [
-        {"name": "Bitcoin", "symbol": "btc", "current_price": 50000.0, "price_change_percentage_24h": 2.5},
-        {"name": "Ethereum", "symbol": "eth", "current_price": 3000.0, "price_change_percentage_24h": -1.2},
-        {"name": "Solana", "symbol": "sol", "current_price": 100.0, "price_change_percentage_24h": 5.8},
+        {
+            "name": "Bitcoin",
+            "symbol": "btc",
+            "current_price": 50000.0,
+            "price_change_percentage_24h": 2.5,
+        },
+        {
+            "name": "Ethereum",
+            "symbol": "eth",
+            "current_price": 3000.0,
+            "price_change_percentage_24h": -1.2,
+        },
+        {
+            "name": "Solana",
+            "symbol": "sol",
+            "current_price": 100.0,
+            "price_change_percentage_24h": 5.8,
+        },
     ]
 
 
@@ -38,14 +54,27 @@ def mock_coingecko_response():
 def mock_cmc_response():
     return {
         "data": [
-            {"name": "Bitcoin", "symbol": "BTC", "quote": {"USD": {"price": 50000.0, "percent_change_24h": 2.5}}},
-            {"name": "Ethereum", "symbol": "ETH", "quote": {"USD": {"price": 3000.0, "percent_change_24h": -1.2}}},
-            {"name": "Solana", "symbol": "SOL", "quote": {"USD": {"price": 100.0, "percent_change_24h": 5.8}}},
+            {
+                "name": "Bitcoin",
+                "symbol": "BTC",
+                "quote": {"USD": {"price": 50000.0, "percent_change_24h": 2.5}},
+            },
+            {
+                "name": "Ethereum",
+                "symbol": "ETH",
+                "quote": {"USD": {"price": 3000.0, "percent_change_24h": -1.2}},
+            },
+            {
+                "name": "Solana",
+                "symbol": "SOL",
+                "quote": {"USD": {"price": 100.0, "percent_change_24h": 5.8}},
+            },
         ]
     }
 
 
 # ========== MOCK HTTP С SESSION ==========
+
 
 @pytest.fixture
 def mock_session(mock_coingecko_response):

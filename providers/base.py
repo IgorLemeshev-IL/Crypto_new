@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from models.crypto_asset import CryptoAsset
 
 

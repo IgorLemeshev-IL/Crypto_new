@@ -1,6 +1,7 @@
 import requests
-from providers.base import CryptoProvider
+
 from models.crypto_asset import CryptoAsset
+from providers.base import CryptoProvider
 
 
 class CoinGeckoProvider(CryptoProvider):

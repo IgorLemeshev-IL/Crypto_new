@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Snapshot, CoinPrice
+
+from .models import CoinPrice, Snapshot
 
 
 class CoinPriceInline(admin.TabularInline):
@@ -9,11 +10,11 @@ class CoinPriceInline(admin.TabularInline):
 
 @admin.register(Snapshot)
 class SnapshotAdmin(admin.ModelAdmin):
-    list_display = ('id', 'created_at')
+    list_display = ("id", "created_at")
     inlines = [CoinPriceInline]
 
 
 @admin.register(CoinPrice)
 class CoinPriceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'symbol', 'price', 'change_24h', 'snapshot')
-    list_filter = ('snapshot',)
+    list_display = ("name", "symbol", "price", "change_24h", "snapshot")
+    list_filter = ("snapshot",)

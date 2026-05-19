@@ -21,7 +21,7 @@ class CryptoAsset:
 
     @staticmethod
     def _validate_number(value, field_name):
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, int | float):
             raise TypeError(f"{field_name} must be a number")
 
     def __str__(self):

@@ -1,7 +1,8 @@
 import csv
 import sys
-from models.crypto_asset import CryptoAsset
+
 from formatters.base import OutputFormatter
+from models.crypto_asset import CryptoAsset
 
 
 class CSVFormatter(OutputFormatter):
