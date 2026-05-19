@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-m5attkh$wblhafk6)v%d*w29_9l-z@)*(vu#sgsg2eh!__@gp)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 INTERNAL_IPS = [
     "0.0.0.0",
@@ -49,11 +49,13 @@ INSTALLED_APPS = [
     "crypto",
     "rest_framework",
     "debug_toolbar",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -132,11 +134,31 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "5/minute",
+        "user": "100/minute",
+    },
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ],
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_VERSION": "v1",
+    "ALLOWED_VERSIONS": ["v1"],
+    "EXCEPTION_HANDLER": "crypto.exceptions.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
@@ -158,4 +180,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "crypto.tasks.fetch_snapshot_task",
         "schedule": crontab(minute="0", hour="*"),  # каждый час
     },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Crypto Analyzer API",
+    "DESCRIPTION": "API для анализа криптовалют",
+    "VERSION": "1.0.0",
 }

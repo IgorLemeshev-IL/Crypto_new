@@ -1,13 +1,17 @@
 from celery.result import AsyncResult
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from crypto.analytics_service import AnalyticsService
+from crypto.filters import CoinPriceFilter
 from crypto.models import CoinPrice, Snapshot
+from crypto.permissions import IsAdminOrReadOnly
 from crypto.services import WatchlistService
 from crypto.tasks import fetch_snapshot_task
 
@@ -17,13 +21,21 @@ from .serializers import CoinPriceSerializer, SnapshotSerializer, WatchlistItemS
 class SnapshotViewSet(ReadOnlyModelViewSet):
     queryset = Snapshot.objects.prefetch_related("prices").all()
     serializer_class = SnapshotSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class CoinPriceViewSet(ReadOnlyModelViewSet):
     queryset = CoinPrice.objects.all()
     serializer_class = CoinPriceSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ["symbol"]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = CoinPriceFilter
+    search_fields = ["symbol", "name"]
+    ordering_fields = ["price", "change_24h"]
+
+
+class CoinPriceCursorPagination(CursorPagination):
+    page_size = 10
+    ordering = "-id"
 
 
 class WatchlistView(APIView):
@@ -90,6 +102,8 @@ class CoinsFilterView(APIView):
 
 
 class FetchSnapshotView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def post(self, request):
         task = fetch_snapshot_task.delay()
         return Response({"task_id": task.id, "status": "accepted"}, status=status.HTTP_202_ACCEPTED)

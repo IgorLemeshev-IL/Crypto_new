@@ -14,7 +14,7 @@ def retry(max_attempts: int = 3, delay: int = 2):
             for attempt in range(1, max_attempts + 1):
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:
+                except Exception as e:  # type: ignore[misc]
                     last_exception = e
                     if attempt < max_attempts:
                         time.sleep(delay)
