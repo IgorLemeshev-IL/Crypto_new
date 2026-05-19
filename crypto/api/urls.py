@@ -4,6 +4,7 @@ from .views import (
     SnapshotViewSet, CoinPriceViewSet,
     WatchlistView, WatchlistDeleteView,
     MarketStatsView, TopMoversView, VolumeLeadersView, CoinsFilterView,
+    FetchSnapshotView, TaskStatusView,
 )
 
 router = DefaultRouter()
@@ -17,4 +18,6 @@ urlpatterns = [
     path('analytics/top-movers/', TopMoversView.as_view(), name='top-movers'),
     path('analytics/volume-leaders/', VolumeLeadersView.as_view(), name='volume-leaders'),
     path('coins/filter/', CoinsFilterView.as_view(), name='coins-filter'),
+    path('tasks/fetch-snapshot/', FetchSnapshotView.as_view(), name='fetch-snapshot'),
+    path('tasks/<str:task_id>/', TaskStatusView.as_view(), name='task-status'),
 ] + router.urls

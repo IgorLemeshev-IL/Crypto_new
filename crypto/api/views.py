@@ -5,15 +5,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
+from celery.result import AsyncResult
+
 from crypto.models import Snapshot, CoinPrice
 from crypto.services import WatchlistService
+from crypto.analytics_service import AnalyticsService
+from crypto.tasks import fetch_snapshot_task
 from .serializers import SnapshotSerializer, CoinPriceSerializer, WatchlistItemSerializer
 
-from rest_framework.decorators import api_view
-from crypto.analytics_service import AnalyticsService
 
 class SnapshotViewSet(ReadOnlyModelViewSet):
-    queryset = Snapshot.objects.prefetch_related('prices').all() # загружаем все цены для снимков 1 запросома не для каждого запрос 
+    queryset = Snapshot.objects.prefetch_related('prices').all()
     serializer_class = SnapshotSerializer
 
 
@@ -21,8 +23,7 @@ class CoinPriceViewSet(ReadOnlyModelViewSet):
     queryset = CoinPrice.objects.all()
     serializer_class = CoinPriceSerializer
     filter_backends = [SearchFilter]
-    filterset_fields = ['symbol']
-    search_fields = ['name']
+    search_fields = ['symbol']
 
 
 class WatchlistView(APIView):
@@ -55,7 +56,7 @@ class WatchlistDeleteView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
-        
+
 
 class MarketStatsView(APIView):
     def get(self, request):
@@ -86,3 +87,27 @@ class CoinsFilterView(APIView):
             float(max_price) if max_price else None,
         )
         return Response(result)
+
+
+class FetchSnapshotView(APIView):
+    def post(self, request):
+        task = fetch_snapshot_task.delay()
+        return Response(
+            {'task_id': task.id, 'status': 'accepted'},
+            status=status.HTTP_202_ACCEPTED
+        )
+
+
+class TaskStatusView(APIView):
+    def get(self, request, task_id):
+        result = AsyncResult(task_id)
+        response = {
+            'task_id': task_id,
+            'status': result.state,
+        }
+        if result.ready():
+            if result.successful():
+                response['result'] = result.result
+            else:
+                response['error'] = str(result.info)
+        return Response(response)
