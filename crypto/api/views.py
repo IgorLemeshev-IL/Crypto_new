@@ -1,4 +1,5 @@
 from celery.result import AsyncResult
+from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -72,22 +73,36 @@ class WatchlistDeleteView(APIView):
 
 class MarketStatsView(APIView):
     def get(self, request):
-        stats = AnalyticsService.market_stats()
-        if stats is None:
-            return Response({"error": "No snapshots"}, status=404)
-        return Response(stats)
+        data = cache.get("market_stats")
+        if data is None:
+            stats = AnalyticsService.market_stats()
+            if stats is None:
+                return Response({"error": "No snapshots"}, status=404)
+            data = stats
+            cache.set("market_stats", data, timeout=4200)
+        return Response(data)
 
 
 class TopMoversView(APIView):
     def get(self, request):
         limit = int(request.query_params.get("limit", 10))
-        return Response(AnalyticsService.top_movers(limit))
+        cache_key = f"top_movers_limit_{limit}"
+        data = cache.get(cache_key)  # СНАЧАЛА ПРОВЕРЯЕМ КЭШ
+        if data is None:  # Если в кэше нет
+            data = AnalyticsService.top_movers(limit)  # ТОГДА считаем
+            cache.set(cache_key, data, timeout=4200)  # И сохраняем
+        return Response(data)  # Возвращаем из кэша
 
 
 class VolumeLeadersView(APIView):
     def get(self, request):
         limit = int(request.query_params.get("limit", 10))
-        return Response(AnalyticsService.volume_leaders(limit))
+        cache_key = f"volume_leaders_limit_{limit}"
+        data = cache.get(cache_key)
+        if data is None:
+            data = AnalyticsService.volume_leaders(limit)
+            cache.set(cache_key, data, timeout=4200)
+        return Response(data)
 
 
 class CoinsFilterView(APIView):

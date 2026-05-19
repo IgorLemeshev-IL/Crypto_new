@@ -187,3 +187,15 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API для анализа криптовалют",
     "VERSION": "1.0.0",
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",  # БД 1 (отдельно от broker)
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "django_cache",
+        "TIMEOUT": 300,
+    }
+}
