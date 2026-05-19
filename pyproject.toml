@@ -1,0 +1,40 @@
+[project]
+name = "crypto-analyzer"
+version = "1.0.0"
+description = "Крипто-анализатор рынка"
+requires-python = ">=3.12"
+
+dependencies = [
+    "requests>=2.31",
+    "rich>=13.0",
+    "typer>=0.12",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=9.0",
+    "pytest-cov>=7.0",
+]
+
+[tool.ruff]
+line-length = 130
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = false
+exclude = ["crypto_analyzer.py", "decorators.py"]
+
+[[tool.mypy.overrides]]
+module = "crypto.models"
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"

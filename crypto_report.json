@@ -1,44 +1,44 @@
 {
-    "generated_at": "2026-04-24 16:58:54",
+    "generated_at": "2026-04-24 17:03:00",
     "total_coins_analyzed": 50,
-    "total_market_cap_usd": 2573789691103,
+    "total_market_cap_usd": 2575496399688,
     "top_gainers": [
         {
             "name": "Zcash",
             "symbol": "zec",
-            "change_24h": 6.85756
+            "change_24h": 7.38719
         },
         {
             "name": "Rain",
             "symbol": "rain",
-            "change_24h": 5.68373
+            "change_24h": 5.68899
         },
         {
             "name": "NEAR Protocol",
             "symbol": "near",
-            "change_24h": 2.051
+            "change_24h": 1.91163
         }
     ],
     "top_losers": [
         {
             "name": "World Liberty Financial",
             "symbol": "wlfi",
-            "change_24h": -2.39925
+            "change_24h": -2.38516
         },
         {
             "name": "Stellar",
             "symbol": "xlm",
-            "change_24h": -1.37676
+            "change_24h": -1.38364
         },
         {
             "name": "MemeCore",
             "symbol": "m",
-            "change_24h": -1.05185
+            "change_24h": -1.24707
         }
     ],
     "highest_volume": {
         "name": "Tether",
         "symbol": "usdt",
-        "volume_usd": 62627254073
+        "volume_usd": 62619818353
     }
 }
