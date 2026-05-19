@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from crypto.models import Snapshot, CoinPrice
+from crypto.models import Snapshot, CoinPrice, WatchlistItem
 
 
 class CoinPriceSerializer(serializers.ModelSerializer):
@@ -14,3 +14,10 @@ class SnapshotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snapshot
         fields = ['id', 'created_at', 'prices']
+
+
+class WatchlistItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WatchlistItem
+        fields = ['id', 'symbol', 'created_at']
+        read_only_fields = ['id', 'created_at']
