@@ -1,0 +1,212 @@
+.
+├── Dockerfile
+├── Makefile
+├── README.md
+├── __pycache__
+│   ├── decorators.cpython-312.pyc
+│   └── settings.cpython-312.pyc
+├── arch.txt
+├── celerybeat-schedule
+├── config
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── celery.cpython-312.pyc
+│   │   ├── settings.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── wsgi.cpython-312.pyc
+│   ├── asgi.py
+│   ├── celery.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── crypto
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── analytics_service.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── exceptions.cpython-312.pyc
+│   │   ├── filters.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   ├── permissions.cpython-312.pyc
+│   │   ├── services.cpython-312.pyc
+│   │   ├── tasks.cpython-312.pyc
+│   │   └── utils.cpython-312.pyc
+│   ├── admin.py
+│   ├── analytics_service.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── serializers.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── apps.py
+│   ├── exceptions.py
+│   ├── filters.py
+│   ├── management
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   └── commands
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_watchlistitem.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── permissions.py
+│   ├── services.py
+│   ├── tasks.py
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── test_analytics.py
+│   │   ├── test_api.py
+│   │   ├── test_celery.py
+│   │   └── test_services.py
+│   ├── tests.py
+│   ├── throttles.py
+│   ├── utils.py
+│   └── views.py
+├── crypto.db
+├── crypto_analyzer.py
+├── crypto_report.json
+├── db.sqlite3
+├── decorators.py
+├── docker-compose.yml
+├── formatters
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── base.cpython-312.pyc
+│   │   ├── console.cpython-312.pyc
+│   │   ├── csv.cpython-312.pyc
+│   │   ├── factory.cpython-312.pyc
+│   │   └── json.cpython-312.pyc
+│   ├── base.py
+│   ├── console.py
+│   ├── csv.py
+│   ├── factory.py
+│   └── json.py
+├── main.py
+├── manage.py
+├── models
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── crypto_asset.cpython-312.pyc
+│   │   └── portfolio.cpython-312.pyc
+│   ├── crypto_asset.py
+│   └── portfolio.py
+├── nginx.conf
+├── providers
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── base.cpython-312.pyc
+│   │   ├── coingecko.cpython-312.pyc
+│   │   ├── coinmarketcap.cpython-312.pyc
+│   │   └── factory.cpython-312.pyc
+│   ├── base.py
+│   ├── coingecko.py
+│   ├── coinmarketcap.py
+│   └── factory.py
+├── pyproject.toml
+├── pytest.ini
+├── requirements.txt
+├── settings.py
+├── staticfiles
+│   ├── admin
+│   │   ├── css
+│   │   ├── img
+│   │   └── js
+│   ├── debug_toolbar
+│   │   ├── css
+│   │   └── js
+│   └── rest_framework
+│       ├── css
+│       ├── fonts
+│       ├── img
+│       └── js
+├── storage
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── base.cpython-312.pyc
+│   │   ├── factory.cpython-312.pyc
+│   │   ├── json_storage.cpython-312.pyc
+│   │   └── sqlite_storage.cpython-312.pyc
+│   ├── base.py
+│   ├── factory.py
+│   ├── json_storage.py
+│   └── sqlite_storage.py
+├── tests
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── conftest.cpython-312-pytest-9.0.3.pyc
+│   │   ├── test_collection.cpython-312-pytest-9.0.3.pyc
+│   │   ├── test_decorators.cpython-312-pytest-9.0.3.pyc
+│   │   ├── test_formatters.cpython-312-pytest-9.0.3.pyc
+│   │   ├── test_models.cpython-312-pytest-9.0.3.pyc
+│   │   ├── test_providers.cpython-312-pytest-9.0.3.pyc
+│   │   ├── test_settings.cpython-312-pytest-9.0.3.pyc
+│   │   └── test_storage.cpython-312-pytest-9.0.3.pyc
+│   ├── conftest.py
+│   ├── test_collection.py
+│   ├── test_decorators.py
+│   ├── test_formatters.py
+│   ├── test_models.py
+│   ├── test_providers.py
+│   ├── test_settings.py
+│   └── test_storage.py
+├── uv.lock
+└── venv
+    ├── bin
+    │   ├── Activate.ps1
+    │   ├── activate
+    │   ├── activate.csh
+    │   ├── activate.fish
+    │   ├── celery
+    │   ├── coverage
+    │   ├── coverage-3.12
+    │   ├── coverage3
+    │   ├── django-admin
+    │   ├── dmypy
+    │   ├── dotenv
+    │   ├── gunicorn
+    │   ├── gunicornc
+    │   ├── identify-cli
+    │   ├── jsonschema
+    │   ├── markdown-it
+    │   ├── mypy
+    │   ├── mypyc
+    │   ├── nodeenv
+    │   ├── normalizer
+    │   ├── pip
+    │   ├── pip3
+    │   ├── pip3.12
+    │   ├── pre-commit
+    │   ├── py.test
+    │   ├── pygmentize
+    │   ├── pytest
+    │   ├── python -> python3
+    │   ├── python3 -> /usr/bin/python3
+    │   ├── python3.12 -> python3
+    │   ├── ruff
+    │   ├── sqlformat
+    │   ├── stubgen
+    │   ├── stubtest
+    │   ├── typer
+    │   ├── uv
+    │   ├── uvx
+    │   └── virtualenv
+    ├── include
+    │   └── python3.12
+    ├── lib
+    │   └── python3.12
+    ├── lib64 -> lib
+    └── pyvenv.cfg
+
+45 directories, 165 files
