@@ -1,9 +1,12 @@
+from decimal import Decimal
+
 from celery.result import AsyncResult
 from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
+from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAuthenticated
@@ -13,12 +16,19 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from crypto.analytics_service import AnalyticsService
 from crypto.filters import CoinPriceFilter
-from crypto.models import CoinPrice, Snapshot
+from crypto.models import Balance, CoinPrice, PortfolioPosition, Snapshot
 from crypto.permissions import IsAdminOrReadOnly
+from crypto.portfolio_service import PortfolioService
 from crypto.services import WatchlistService
 from crypto.tasks import fetch_snapshot_task
 
-from .serializers import CoinPriceSerializer, SnapshotSerializer, WatchlistItemSerializer
+from .serializers import (
+    BuySellSerializer,
+    CoinPriceSerializer,
+    PortfolioPositionSerializer,
+    SnapshotSerializer,
+    WatchlistItemSerializer,
+)
 
 
 class SnapshotViewSet(ReadOnlyModelViewSet):
@@ -93,11 +103,11 @@ class TopMoversView(APIView):
     def get(self, request):
         limit = int(request.query_params.get("limit", 10))
         cache_key = f"top_movers_limit_{limit}"
-        data = cache.get(cache_key)  # СНАЧАЛА ПРОВЕРЯЕМ КЭШ
-        if data is None:  # Если в кэше нет
-            data = AnalyticsService.top_movers(limit)  # ТОГДА считаем
-            cache.set(cache_key, data, timeout=4200)  # И сохраняем
-        return Response(data)  # Возвращаем из кэша
+        data = cache.get(cache_key)
+        if data is None:
+            data = AnalyticsService.top_movers(limit)
+            cache.set(cache_key, data, timeout=4200)
+        return Response(data)
 
 
 class VolumeLeadersView(APIView):
@@ -143,3 +153,113 @@ class TaskStatusView(APIView):
             else:
                 response["error"] = str(result.info)
         return Response(response)
+
+
+class PortfolioListView(generics.ListAPIView):
+    """GET /api/portfolio/ - список позиций портфеля"""
+
+    serializer_class = PortfolioPositionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return PortfolioPosition.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        service = PortfolioService(request.user)
+        portfolio_data = service.get_portfolio_value()
+        return Response(
+            {
+                "positions": portfolio_data["positions"],
+                "total_value": portfolio_data["total_value"],
+                "total_invested": portfolio_data["total_invested"],
+                "total_profit": portfolio_data["total_profit"],
+            }
+        )
+
+
+class PortfolioBuyView(generics.GenericAPIView):
+    """POST /api/portfolio/buy/ - покупка монеты"""
+
+    serializer_class = BuySellSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        symbol = serializer.validated_data["symbol"]
+        amount = serializer.validated_data["amount"]
+        price_per_coin = serializer.validated_data.get("price_per_coin")
+
+        try:
+            position = PortfolioService.buy(user=request.user, symbol=symbol, amount=amount, price_per_coin=price_per_coin)
+
+            return Response(
+                {
+                    "status": "success",
+                    "message": f"Successfully bought {amount} {symbol}",
+                    "position": {
+                        "symbol": position.symbol,
+                        "amount": position.amount,
+                        "avg_buy_price": position.avg_buy_price,
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as e:
+            raise ValidationError({"detail": str(e)})
+
+
+class PortfolioSellView(generics.GenericAPIView):
+    """POST /api/portfolio/sell/ - продажа монеты"""
+
+    serializer_class = BuySellSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        symbol = serializer.validated_data["symbol"]
+        amount = serializer.validated_data["amount"]
+        price_per_coin = serializer.validated_data.get("price_per_coin")
+
+        try:
+            revenue = PortfolioService.sell(user=request.user, symbol=symbol, amount=amount, price_per_coin=price_per_coin)
+
+            return Response(
+                {"status": "success", "message": f"Successfully sold {amount} {symbol}", "revenue": f"${revenue:.2f}"},
+                status=status.HTTP_200_OK,
+            )
+
+        except ValueError as e:
+            raise ValidationError({"detail": str(e)})
+
+
+class PortfolioSummaryView(generics.GenericAPIView):
+    """GET /api/portfolio/summary/ - сводка по портфелю"""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        service = PortfolioService(request.user)
+        portfolio_data = service.get_portfolio_value()
+        balance, _ = Balance.objects.get_or_create(user=request.user, defaults={"amount": Decimal("0.00")})
+
+        return Response(
+            {
+                "portfolio": {
+                    "total_value": portfolio_data["total_value"],
+                    "total_invested": portfolio_data["total_invested"],
+                    "total_profit": portfolio_data["total_profit"],
+                    "total_profit_percent": (
+                        (portfolio_data["total_profit"] / portfolio_data["total_invested"] * 100)
+                        if portfolio_data["total_invested"] > 0
+                        else 0
+                    ),
+                },
+                "balance_usd": balance.amount,
+                "total_net_worth": balance.amount + portfolio_data["total_value"],
+            }
+        )
