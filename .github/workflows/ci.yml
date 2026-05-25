@@ -12,17 +12,17 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff mypy django djangorestframework psycopg2-binary pytest pytest-django django-extensions celery redis
+          pip install -r requirements.txt
           pip install testcontainers[postgres,redis]
 
       - name: Run ruff linter
