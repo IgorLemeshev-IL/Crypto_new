@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy django djangorestframework psycopg2-binary pytest pytest-django django-extensions celery redis
+          pip install testcontainers[postgres,redis]
+
+      - name: Run ruff linter
+        run: ruff check .
+
+      - name: Run ruff formatter check
+        run: ruff format --check .
+
+      - name: Run mypy type check
+        run: mypy crypto config
+
+      - name: Check migrations
+        run: python manage.py makemigrations --check --no-input
+
+      - name: Run unit tests
+        run: pytest crypto/tests/ -v -m "not integration"
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+
+      - name: Run integration tests
+        run: pytest crypto/tests/ -v -m integration
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
