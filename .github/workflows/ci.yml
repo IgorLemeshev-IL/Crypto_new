@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ============================================================
+  # JOB 1: ЛИНТИНГ
+  # ============================================================
   lint:
     name: Lint Python code
     runs-on: ubuntu-latest
@@ -34,8 +37,11 @@ jobs:
       - name: Run mypy type check
         run: mypy crypto config
 
+  # ============================================================
+  # JOB 2: ТЕСТЫ С POSTGRESQL И REDIS
+  # ============================================================
   tests:
-    name: Tests with PostgreSQL
+    name: Tests with PostgreSQL and Redis
     needs: lint
     runs-on: ubuntu-latest
     
@@ -122,6 +128,9 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5432
 
+  # ============================================================
+  # JOB 3: ПРОВЕРКА МИГРАЦИЙ
+  # ============================================================
   migrations-check:
     name: Check migrations
     needs: lint
