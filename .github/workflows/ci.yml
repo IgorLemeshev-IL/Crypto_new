@@ -37,7 +37,7 @@ jobs:
         run: python manage.py makemigrations --check --no-input
 
       - name: Run all tests with Testcontainers
-        run: pytest crypto/tests/ -v --ds=config.settings
+        run: pytest crypto/tests/ -v --ds=config.settings_test
         env:
-          DJANGO_SETTINGS_MODULE: config.settings
+          DJANGO_SETTINGS_MODULE: config.settings_test
           TESTCONTAINERS_RYUK_DISABLED: "true"
