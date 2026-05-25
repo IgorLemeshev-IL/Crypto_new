@@ -19,11 +19,16 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install Docker (for Testcontainers)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install testcontainers[postgres,redis]
 
       - name: Run ruff linter
         run: ruff check .
@@ -37,12 +42,8 @@ jobs:
       - name: Check migrations
         run: python manage.py makemigrations --check --no-input
 
-      - name: Run unit tests
-        run: pytest crypto/tests/ -v -m "not integration"
+      - name: Run all tests with Testcontainers
+        run: pytest crypto/tests/ -v --ds=config.settings
         env:
           DJANGO_SETTINGS_MODULE: config.settings
-
-      - name: Run integration tests
-        run: pytest crypto/tests/ -v -m integration
-        env:
-          DJANGO_SETTINGS_MODULE: config.settings
+          TESTCONTAINERS_RYUK_DISABLED: "true"
