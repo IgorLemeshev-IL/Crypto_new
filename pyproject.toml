@@ -30,10 +30,19 @@ quote-style = "double"
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = false
-exclude = ["crypto_analyzer.py", "decorators.py"]
+exclude = [
+    "crypto_analyzer.py",
+    "decorators.py",
+    "crypto/migrations/",
+    "config/migrations/",
+]
 
 [[tool.mypy.overrides]]
 module = "crypto.models"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "crypto.migrations.*"
 ignore_errors = true
 
 [tool.django-stubs]
