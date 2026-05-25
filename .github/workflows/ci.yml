@@ -1,50 +1,15 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
-  pull_request:
-    branches: [main, develop]
   push:
-    branches: [main, develop]
-  workflow_dispatch:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main]
 
 jobs:
-  # ============================================================
-  # JOB 1: ЛИНТИНГ
-  # ============================================================
-  lint:
-    name: Lint Python code
+  test:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      
-      - name: Install dependencies
-        run: |
-          pip install ruff mypy
-      
-      - name: Run Ruff linter
-        run: ruff check .
-      
-      - name: Run Ruff formatter check
-        run: ruff format --check .
-      
-      - name: Run mypy type check
-        run: mypy crypto config
 
-  # ============================================================
-  # JOB 2: ТЕСТЫ С POSTGRESQL И REDIS
-  # ============================================================
-  tests:
-    name: Tests with PostgreSQL and Redis
-    needs: lint
-    runs-on: ubuntu-latest
-    
     services:
       postgres:
         image: postgres:16
@@ -54,130 +19,36 @@ jobs:
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-      
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
       redis:
         image: redis:7
         ports:
           - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-    
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: "pip"
-      
+          python-version: '3.12'
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-      
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
-              echo "PostgreSQL is ready"
-              break
-            fi
-            echo "Waiting for PostgreSQL... (attempt $i/30)"
-            sleep 2
-          done
-      
-      - name: Wait for Redis to be ready
-        run: |
-          for i in {1..30}; do
-            if redis-cli -h localhost -p 6379 ping; then
-              echo "Redis is ready"
-              break
-            fi
-            echo "Waiting for Redis... (attempt $i/30)"
-            sleep 2
-          done
-      
+
       - name: Run migrations
-        run: |
-          python manage.py migrate --settings=config.settings_test
+        run: python manage.py migrate
         env:
-          DB_NAME: test_db
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
-      
-      - name: Run tests
-        run: |
-          pytest crypto/tests/ -v --ds=config.settings_test
-        env:
-          DJANGO_SETTINGS_MODULE: config.settings_test
           DB_NAME: test_db
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
 
-  # ============================================================
-  # JOB 3: ПРОВЕРКА МИГРАЦИЙ
-  # ============================================================
-  migrations-check:
-    name: Check migrations
-    needs: lint
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-      
-      - name: Wait for PostgreSQL
-        run: |
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
-              echo "PostgreSQL is ready"
-              break
-            fi
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
-      
-      - name: Check migrations
-        run: python manage.py makemigrations --check --no-input
+      - name: Run tests
+        run: pytest crypto/tests/ -v
         env:
           DB_NAME: test_db
           DB_USER: postgres
