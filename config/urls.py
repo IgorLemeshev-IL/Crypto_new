@@ -7,6 +7,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+# Импортируем нашу новую вьюшку
+from crypto.views_metrics import metrics_view
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include("crypto.api.urls")),
@@ -15,9 +18,8 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    # Добавляем наш собственный маршрут для метрик
+    path("metrics/", metrics_view, name="metrics"),
 ]
 
 urlpatterns += debug_toolbar_urls()
-urlpatterns += [
-    path("metrics/", include("django_prometheus.urls")),
-]
