@@ -1,6 +1,6 @@
 # Crypto Analyzer — Production API
 
-## Практика: Permissions, Throttling, Swagger, Versioning, Gunicorn
+Permissions, Throttling, Swagger, Versioning, Gunicorn
 
 ---
 
