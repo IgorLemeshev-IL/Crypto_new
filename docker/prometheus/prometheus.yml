@@ -3,7 +3,8 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: django
+  - job_name: 'django'
     static_configs:
-      - targets: ["web:8000"]
-    metrics_path: "/metrics/"
+      - targets: ['web:8000']
+    metrics_path: '/metrics/'
+    scheme: http
